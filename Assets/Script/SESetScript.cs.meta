@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 10c14af90f419514cb3da1356b9fdf70
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - jumpSE: {fileID: 8300000, guid: 60135e17d62f6664b9ccc74a49a9e8e4, type: 3}
+  - playerDamageSE: {fileID: 8300000, guid: 4303b2dd550de8040a7fddde6d09ffc0, type: 3}
+  - gameOverSE: {fileID: 8300000, guid: bf74c9c5612cc564199970395857c784, type: 3}
+  - stepOnSE: {fileID: 8300000, guid: 3ced31e19091a3542b333d28d2b2ea9c, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

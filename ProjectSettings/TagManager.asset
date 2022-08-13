@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Ground
+  - Enemy
+  - DeadArea
+  - DamageArea
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -38,6 +43,24 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: BackGround
+    uniqueID: 1136459937
+    locked: 0
+  - name: BackGround_Other
+    uniqueID: 3243301937
+    locked: 0
+  - name: DamageObject
+    uniqueID: 1496903751
+    locked: 0
+  - name: NotDamageObject
+    uniqueID: 3763425901
+    locked: 0
+  - name: StageTilemap
+    uniqueID: 1841461761
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Fade
+    uniqueID: 2618862611
     locked: 0
