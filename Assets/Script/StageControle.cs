@@ -84,9 +84,10 @@ public class StageControle : MonoBehaviour
                 }
 
                 // 画面移動
-                if(retryGame || nextStageGo)
+                if (retryGame || nextStageGo)
                 {
                     ThisGameManager.instance.isStageCrear = false;
+                    // まだ次のステージはできていない。
                     SceneManager.LoadScene("Stage" + ThisGameManager.instance.stageNum);
                     doScoreChange = true;
                     Debug.Log("ロードシーン");
@@ -96,19 +97,23 @@ public class StageControle : MonoBehaviour
     }
 
     /// <summary>
-    /// ボタン押下時にSave位置から再開する
+    /// Retryボタン押下時にSave位置から再開する
     /// </summary>
     public void Retry()
     {
-        //ChangeScene(1);
         ChangeScene(ThisGameManager.instance.stageNum);
         retryGame = true;
         Debug.Log("リトライボタン");
     }
 
+    /// <summary>
+    /// Nextボタン押下時に次のステージへいく
+    /// </summary>
     public void NextStage()
     {
         nextStageGo = true;
+        // Stage2がまだないためThankyouForPlayingになる
+        ChangeScene(ThisGameManager.instance.stageNum + 1);
         Debug.Log("次のステージ");
     }
 

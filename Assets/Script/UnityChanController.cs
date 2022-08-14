@@ -40,7 +40,7 @@ public class UnityChanController : MonoBehaviour
     private float runTime = 0.0f;
     // キー入力の保存
     private float beforeKey = 0.0f;
-    // 経過時間
+    // 経過時間変数
     private float _time = 0.0f;
     // 動けない時間
     private float lostTime = 1.5f;
@@ -66,6 +66,8 @@ public class UnityChanController : MonoBehaviour
 
     // 1度だけ処理したいものに使う変数
     private bool justOnce = false;
+    // Unirychanのスケール保持用変数
+    private Vector3 defaultScale;
     #endregion
 
     #region// Tag
@@ -84,6 +86,7 @@ public class UnityChanController : MonoBehaviour
         rigid2D = GetComponent<Rigidbody2D>();
         capsuleCollider2D = GetComponent<CapsuleCollider2D>();
         blinker = GetComponent<SpliteRendererBlinker>();
+        defaultScale = transform.localScale;
     }
 
     // Update is called once per frame
@@ -112,8 +115,8 @@ public class UnityChanController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        // ダメージ時、ゲームオーバー時は動かないように
-        if (!isDamage && !ThisGameManager.instance.isGameOver && !isClearMotion)
+        // ダメージ時、ゲームオーバー時、クリア時は動かないように
+        if (!isDamage && !ThisGameManager.instance.isGameOver && !ThisGameManager.instance.isStageCrear)
         {
 
             // 接地判定を受け取る
@@ -140,22 +143,21 @@ public class UnityChanController : MonoBehaviour
 
             if (!justOnce)
             {
-                // 速度を無くさないと可笑しな挙動になる
-                rigid2D.velocity = new Vector2(0.0f, gravity * Physics.gravity.y);
-
                 // とりあえず向いている方向から後ろへノックバック
                 if (transform.localScale.x >= 0)
                 {
-                    rigid2D.AddForce(transform.right * -400.0f);
+                    rigid2D.AddForce(transform.right * -1000.0f);
                 }
                 else
                 {
-                    rigid2D.AddForce(transform.right * 400.0f);
+                    rigid2D.AddForce(transform.right * 1000.0f);
                 }
                 justOnce = true;
             }
+
             if (lostTime < _time)
             {
+                // フラグや時間経過を戻す
                 isDamage = false;
                 animator.SetBool("Damage", isDamage);
                 justOnce = false;
@@ -169,13 +171,27 @@ public class UnityChanController : MonoBehaviour
         }
         else
         {
-            // クリア時はクリアモーションを行う
-            if(!isClearMotion && ThisGameManager.instance.isStageCrear)
+            rigid2D.velocity = new Vector2(0.0f, gravity * Physics.gravity.y);
+
+            // すぐに始まってしまうと見えないため少し待つ
+            _time += Time.deltaTime;
+            if (_time > 2.0f)
             {
-                animator.Play("");
-                isClearMotion = true;
+                // クリア時はクリアモーションを行う
+                if (!isClearMotion && ThisGameManager.instance.isStageCrear)
+                {
+                    animator.Play("Unitychan_SpecialAttack");
+                    AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
+                    if (currentState.IsName("Unitychan_SpecialAttack"))
+                    {
+                        if (currentState.normalizedTime >= 1)
+                        {
+                            animator.SetTrigger("Clear");
+                            isClearMotion = true;
+                        }
+                    }
+                }
             }
-            rigid2D.velocity = new Vector2(0, -gravity);
         }
     }
 
@@ -279,7 +295,7 @@ public class UnityChanController : MonoBehaviour
         // 右方向入力
         if (horizontalKey > 0)
         {
-            transform.localScale = new Vector3(5, 5, 5);
+            transform.localScale = new Vector3(defaultScale.x, defaultScale.y, defaultScale.z);
             setRunSpeed = runSpeed;
             runTime += Time.deltaTime;
             xSpeed = runSpeed;
@@ -287,7 +303,7 @@ public class UnityChanController : MonoBehaviour
         // 左方向入力
         else if (horizontalKey < 0)
         {
-            transform.localScale = new Vector3(-5, 5, 5);
+            transform.localScale = new Vector3(-defaultScale.x, defaultScale.y, defaultScale.z);
             setRunSpeed = runSpeed;
             runTime += Time.deltaTime;
             xSpeed = -runSpeed;

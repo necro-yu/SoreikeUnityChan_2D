@@ -15,12 +15,18 @@ public class GroundCheck : MonoBehaviour
     // ê⁄ínîªíËìØól
     public bool isEnemyCheck()
     {
-        if (isEnemyEnter)
+        if (isEnemyEnter || isEnemyStay)
         {
             isEnemy = true;
         }
+        else if(isEnemyExit)
+        {
+            isEnemy = false;
+        }
 
         isEnemyEnter = false;
+        isEnemyStay = false;
+        isEnemyExit = false;
         return isEnemy;
     }
 
@@ -49,7 +55,7 @@ public class GroundCheck : MonoBehaviour
         {
             isGroundEnter = true;
         }
-        else if(collision.tag == enemyTag)
+        else if (collision.tag == enemyTag)
         {
             isEnemyEnter = true;
         }
@@ -61,6 +67,10 @@ public class GroundCheck : MonoBehaviour
         {
             isGroundStay = true;
         }
+        else if (collision.tag == enemyTag)
+        {
+            isEnemyStay = true;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -68,6 +78,10 @@ public class GroundCheck : MonoBehaviour
         if (collision.tag == groundTag)
         {
             isGroundExit = true;
+        }
+        else if (collision.tag == enemyTag)
+        {
+            isEnemyExit = true;
         }
     }
 }

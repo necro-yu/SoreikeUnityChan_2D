@@ -20,9 +20,11 @@ public class Enemy_BOSS : MonoBehaviour
     private Animator animator = null;
     private ObjectCollision objectCollision = null;
     private BoxCollider2D boxCollider2D = null;
+    private Vector3 defaultScale;
     private bool rightTleftF = false;
     private bool isDamage = false;
-    private bool justOne = false;
+    private float damagetime = 2.0f;
+    private float timer = 0.0f;
     #endregion
 
     // Start is called before the first frame update
@@ -33,6 +35,7 @@ public class Enemy_BOSS : MonoBehaviour
         animator = GetComponent<Animator>();
         objectCollision = GetComponent<ObjectCollision>();
         boxCollider2D = GetComponent<BoxCollider2D>();
+        defaultScale = transform.localScale;
     }
 
     // Update is called once per frame
@@ -41,16 +44,24 @@ public class Enemy_BOSS : MonoBehaviour
         if (isDamage)
         {
             bossBlinker.BeginBlink();
+            Debug.Log("点滅");
         }
         else
         {
             bossBlinker.EndBlink();
+            Debug.Log("点滅終了");
         }
     }
 
     // FixedUpdate
     void FixedUpdate()
     {
+        if (ThisGameManager.instance.isGameOver || ThisGameManager.instance.isGameOver)
+        {
+            rigidbody2D.velocity = new Vector2(0, -gravity);
+            return;
+        }
+
         if (!objectCollision.playerStepOn)
         {
             if (spriteRenderer.isVisible || nonVisible)
@@ -66,13 +77,16 @@ public class Enemy_BOSS : MonoBehaviour
                 if (rightTleftF)
                 {
                     xVector = 1;
-                    transform.localScale = new Vector3(-1.8f, 1.8f, 1.8f);
+                    transform.localScale = new Vector3(-defaultScale.x, defaultScale.y, defaultScale.z);
                 }
                 else
                 {
-                    transform.localScale = new Vector3(1.8f, 1.8f, 1.8f);
+                    transform.localScale = new Vector3(defaultScale.x, defaultScale.y, defaultScale.z);
                 }
                 rigidbody2D.velocity = new Vector2(xVector * speed, gravity * Physics.gravity.y);
+
+                // 動いたら画面外でも動く
+                nonVisible = true;
             }
             else
             {
@@ -82,17 +96,27 @@ public class Enemy_BOSS : MonoBehaviour
         }
         else
         {
-            // 死んだ際のアニメーション・簡易なエフェクトなど
+            if (objectCollision.playerStepOn)
+            {
+                objectCollision.playerStepOn = false;
+            }
+            // ダメージを受けた時の処理
             if (!isDamage)
             {
-                animator.Play("Zako_Down");
-                if (!justOne)
-                {
-                    ThisGameManager.instance.PlaySE(SESetScript.instance.stepOnSE);
-                    justOne = true;
-                }
-                rigidbody2D.velocity = new Vector2(0, -gravity);
                 isDamage = true;
+                --bossLife;
+                ThisGameManager.instance.PlaySE(SESetScript.instance.stepOnSE);
+                Debug.Log($"{bossLife}");
+                Debug.Log("ダメージフラグ");
+            }
+
+
+            // 死んだ際のアニメーション・簡易なエフェクトなど
+            if (bossLife <= 0)
+            {
+                Debug.Log("倒した");
+                animator.Play("Zako_Down");
+                rigidbody2D.velocity = new Vector2(0, -gravity);
                 if (ThisGameManager.instance != null)
                 {
                     ThisGameManager.instance.scoreNum += enemyScore;
@@ -101,27 +125,18 @@ public class Enemy_BOSS : MonoBehaviour
                 Destroy(gameObject, 2f);
 
                 ThisGameManager.instance.isStageCrear = true;
-            }
-            else
-            {
                 // やられたときにコライダーを切っているので動かしても問題ない
-                transform.Rotate(new Vector3(0, 0, 7));
+                transform.Rotate(new Vector3(0, 0, 9));
             }
         }
-    }
 
-    /// <summary>
-    /// ボスモンスターへのダメージ処理
-    /// </summary>
-    private void BossSubLife()
-    {
-        if (bossLife > 0)
+        timer += Time.deltaTime;
+        if (damagetime < timer)
         {
-            --bossLife;
-        }
-        else
-        {
-            isDamage = true;
+            isDamage = false;
+            Debug.Log("ダメージフラグ戻った");
+            Debug.Log($"{objectCollision.playerStepOn}");
+            timer = 0.0f;
         }
     }
 }

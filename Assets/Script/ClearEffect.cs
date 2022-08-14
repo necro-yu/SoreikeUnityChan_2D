@@ -29,7 +29,6 @@ public class ClearEffect : MonoBehaviour
             else
             {
                 transform.localScale = Vector3.one;
-                stageControle.ChangeScene(ThisGameManager.instance.stageNum + 1);
                 comp = true;
             }
         }

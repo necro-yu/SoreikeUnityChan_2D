@@ -12,6 +12,7 @@ public class TitleSceneController : MonoBehaviour
 	{
 		Debug.Log("Go Next Scene!");
 		fade.StartFadeOut();
+		ThisGameManager.instance.PlaySE(SESetScript.instance.continueSE);
 	}
 
 	private void Update()

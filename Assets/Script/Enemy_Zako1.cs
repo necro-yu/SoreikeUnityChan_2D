@@ -10,7 +10,6 @@ public class Enemy_Zako1 : MonoBehaviour
     [Header("重力")] public float gravity = 0.7f;
     [Header("画面外でも行動するか")] public bool nonVisible;
     [Header("摂食判定スクリプト")] public Enemy_CollisionCheck eCollisioncheck;
-
     #endregion
 
     #region// プライベート変数群
@@ -19,6 +18,7 @@ public class Enemy_Zako1 : MonoBehaviour
     private Animator animator = null;
     private ObjectCollision objectCollision = null;
     private BoxCollider2D boxCollider2D = null;
+    private Vector3 defaultScale;
     private bool rightTleftF = false;
     private bool isDead = false;
     private bool justOne = false;
@@ -32,11 +32,18 @@ public class Enemy_Zako1 : MonoBehaviour
         animator = GetComponent<Animator>();
         objectCollision = GetComponent<ObjectCollision>();
         boxCollider2D = GetComponent<BoxCollider2D>();
+        defaultScale = transform.localScale;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (ThisGameManager.instance.isGameOver || ThisGameManager.instance.isStageCrear)
+        {
+            rigidbody2D.velocity = new Vector2(0, -gravity);
+            return;
+        }
+
         if (!objectCollision.playerStepOn)
         {
             if (spriteRenderer.isVisible || nonVisible)
@@ -52,11 +59,11 @@ public class Enemy_Zako1 : MonoBehaviour
                 if (rightTleftF)
                 {
                     xVector = 1;
-                    transform.localScale = new Vector3(-0.6f, 0.6f, 0.6f);
+                    transform.localScale = new Vector3(-defaultScale.x, defaultScale.y, defaultScale.z);
                 }
                 else
                 {
-                    transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+                    transform.localScale = new Vector3(defaultScale.x, defaultScale.y, defaultScale.z);
                 }
                 rigidbody2D.velocity = new Vector2(xVector * speed, gravity * Physics.gravity.y);
             }
