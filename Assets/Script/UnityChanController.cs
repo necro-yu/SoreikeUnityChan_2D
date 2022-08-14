@@ -74,7 +74,7 @@ public class UnityChanController : MonoBehaviour
     // EnemyTag
     private string enemyTag = "Enemy";
     // 確定死エリアTag
-    private string deadAreaTag = "DeadArea";
+    //private string deadAreaTag = "DeadArea";
     // ダメージエリアTag
     private string damageAreaTag = "DamageArea";
     #endregion
@@ -173,22 +173,17 @@ public class UnityChanController : MonoBehaviour
         {
             rigid2D.velocity = new Vector2(0.0f, gravity * Physics.gravity.y);
 
-            // すぐに始まってしまうと見えないため少し待つ
-            _time += Time.deltaTime;
-            if (_time > 2.0f)
+            // クリア時はクリアモーションを行う
+            if (!isClearMotion && ThisGameManager.instance.isStageCrear)
             {
-                // クリア時はクリアモーションを行う
-                if (!isClearMotion && ThisGameManager.instance.isStageCrear)
+                animator.Play("Unitychan_SpecialAttack");
+                AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
+                if (currentState.IsName("Unitychan_SpecialAttack"))
                 {
-                    animator.Play("Unitychan_SpecialAttack");
-                    AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
-                    if (currentState.IsName("Unitychan_SpecialAttack"))
+                    if (currentState.normalizedTime >= 1)
                     {
-                        if (currentState.normalizedTime >= 1)
-                        {
-                            animator.SetTrigger("Clear");
-                            isClearMotion = true;
-                        }
+                        animator.SetTrigger("Clear");
+                        isClearMotion = true;
                     }
                 }
             }

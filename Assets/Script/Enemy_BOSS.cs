@@ -23,6 +23,7 @@ public class Enemy_BOSS : MonoBehaviour
     private Vector3 defaultScale;
     private bool rightTleftF = false;
     private bool isDamage = false;
+    private bool isDead = false;
     private float damagetime = 2.0f;
     private float timer = 0.0f;
     #endregion
@@ -109,25 +110,28 @@ public class Enemy_BOSS : MonoBehaviour
                 Debug.Log($"{bossLife}");
                 Debug.Log("ダメージフラグ");
             }
+        }
 
-
-            // 死んだ際のアニメーション・簡易なエフェクトなど
-            if (bossLife <= 0)
+        // 死んだ際のアニメーション・簡易なエフェクトなど
+        if (bossLife <= 0)
+        {
+            Debug.Log("倒した");
+            animator.Play("Zako_Down");
+            rigidbody2D.velocity = new Vector2(0, gravity * Physics2D.gravity.y);
+            if (ThisGameManager.instance != null)
             {
-                Debug.Log("倒した");
-                animator.Play("Zako_Down");
-                rigidbody2D.velocity = new Vector2(0, -gravity);
-                if (ThisGameManager.instance != null)
-                {
-                    ThisGameManager.instance.scoreNum += enemyScore;
-                }
-                boxCollider2D.enabled = false;
-                Destroy(gameObject, 2f);
-
-                ThisGameManager.instance.isStageCrear = true;
-                // やられたときにコライダーを切っているので動かしても問題ない
-                transform.Rotate(new Vector3(0, 0, 9));
+                ThisGameManager.instance.scoreNum += enemyScore;
             }
+            isDead = true;
+            ThisGameManager.instance.isStageCrear = true;
+
+            boxCollider2D.enabled = false;
+            Destroy(gameObject, 2f);
+        }
+        else if(isDead)
+        {
+            // やられたときにコライダーを切っているので動かしても問題ない
+            transform.Rotate(new Vector3(0, 0, 7));
         }
 
         timer += Time.deltaTime;
